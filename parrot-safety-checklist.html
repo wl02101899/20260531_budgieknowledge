@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>養鳥居家安全清單｜變裝虎皮王</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --cream:      #FAF7EE;
+  --caramel:    #C4935A;
+  --caramel-lt: #E8C898;
+  --butter:     #EDD98A;
+  --sage:       #A8BFA8;
+  --sage-dk:    #6E9070;
+  --brown:      #5C3D2A;
+  --brown-mid:  #7A5540;
+  --brown-lt:   #A07860;
+  --ink:        #2E2018;
+  --muted:      #8A7060;
+  --danger:     #C05030;
+  --check-on:   #6E9070;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  background: #DDD5C4;
+  background-image:
+    radial-gradient(ellipse at 10% 10%, rgba(168,191,168,.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(196,147,90,.16) 0%, transparent 50%);
+  font-family: 'Noto Serif TC', serif;
+  min-height: 100vh;
+  padding: 48px 20px 100px;
+  color: var(--ink);
+}
+
+/* ══ PAPER ══ */
+.paper {
+  max-width: 720px; margin: 0 auto;
+  background: var(--cream); border-radius: 28px;
+  box-shadow: 0 2px 0 rgba(255,255,255,.80) inset,
+              0 16px 56px rgba(46,32,24,.18), 0 4px 14px rgba(46,32,24,.10);
+  overflow: hidden; position: relative;
+}
+.paper::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:6px;
+  background: linear-gradient(90deg, var(--caramel), var(--butter), var(--sage), var(--caramel-lt));
+  z-index:10;
+}
+
+/* ══ HEADER ══ */
+.header {
+  background: linear-gradient(148deg, #FAF4E4 0%, #F0E2C0 50%, #E8D4A4 100%);
+  padding: 44px 48px 36px;
+  border-bottom: 1.5px solid rgba(196,147,90,.20);
+  position: relative; overflow: hidden;
+}
+.header::after {
+  content:'🐦'; position:absolute; right:40px; bottom:-10px;
+  font-size:100px; opacity:.08; line-height:1;
+}
+.header .brand {
+  font-family:'Noto Sans TC',sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:2.5px; color:var(--brown-lt); display:block; margin-bottom:10px;
+}
+.header h1 {
+  font-family:'Noto Serif TC',serif; font-size:26px; font-weight:900;
+  color:var(--brown); line-height:1.30; letter-spacing:.5px; margin-bottom:10px;
+}
+.header .desc { font-size:13px; line-height:1.85; color:var(--brown-mid); }
+.header .tag-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.header .htag {
+  background:rgba(196,147,90,.15); color:var(--caramel);
+  font-family:'Noto Sans TC',sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:1px; padding:4px 13px; border-radius:20px;
+  border:1px solid rgba(196,147,90,.25);
+}
+
+/* ══ PROGRESS ══ */
+.progress-wrap { padding: 24px 48px 0; }
+.progress-label {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+}
+.progress-label .pl-text {
+  font-family:'Noto Sans TC',sans-serif; font-size:11px; font-weight:700;
+  color:var(--brown-lt); letter-spacing:1px;
+}
+.progress-label .pl-count {
+  font-family:'Noto Serif TC',serif; font-size:13px; font-weight:700; color:var(--sage-dk);
+  transition: color .3s ease;
+}
+.progress-label .pl-count.complete { color: var(--caramel); }
+.progress-track {
+  height:8px; background:rgba(196,147,90,.15); border-radius:8px; overflow:hidden;
+}
+.progress-bar {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--sage), var(--sage-dk));
+  border-radius:8px;
+  transition: width .40s cubic-bezier(.22,.68,0,1.2), background .40s ease;
+}
+.progress-bar.complete {
+  background: linear-gradient(90deg, var(--caramel-lt), var(--caramel));
+}
+
+/* ══ CONTENT ══ */
+.content { padding: 36px 48px 44px; }
+
+/* ══ SECTION ══ */
+.section { margin-bottom: 30px; }
+.section-head {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:12px; padding-bottom:10px;
+  border-bottom:1.5px dashed rgba(196,147,90,.30);
+}
+.section-icon { font-size:17px; flex-shrink:0; }
+.section-title {
+  font-family:'Noto Serif TC',serif; font-size:13px; font-weight:700;
+  color:var(--caramel); letter-spacing:1.5px; text-transform:uppercase;
+}
+.section-count {
+  margin-left:auto; font-family:'Noto Sans TC',sans-serif;
+  font-size:10px; font-weight:600; color:var(--muted); letter-spacing:1px;
+}
+
+/* ══ UNIFIED TOGGLE ROW (all items use this) ══ */
+.row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:10px 14px; border-radius:12px; margin-bottom:7px;
+  cursor:pointer;
+  background:rgba(255,255,255,.55);
+  border:1.5px solid rgba(196,147,90,.12);
+  transition: background .18s ease, border-color .18s ease, transform .15s ease;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:hover {
+  background:rgba(255,255,255,.85);
+  border-color:rgba(196,147,90,.28);
+  transform: translateX(3px);
+}
+.row:active { transform: translateX(1px) scale(.99); }
+.row.done {
+  background:rgba(110,144,112,.10);
+  border-color:rgba(110,144,112,.28);
+}
+
+/* ── Custom checkbox (right side for sop, left for regular) ── */
+.cb-box {
+  width:20px; height:20px; flex-shrink:0;
+  border-radius:5px; border:2px solid rgba(196,147,90,.45);
+  background:rgba(255,255,255,.85);
+  display:flex; align-items:center; justify-content:center;
+  transition: all .18s ease;
+  margin-top:1px;
+}
+.row.done .cb-box {
+  background:var(--check-on); border-color:var(--sage-dk);
+  box-shadow:0 2px 8px rgba(110,144,112,.32);
+}
+.cb-checkmark {
+  width:10px; height:6px;
+  border-left:2.5px solid white; border-bottom:2.5px solid white;
+  transform:rotate(-45deg) translateY(-1px);
+  opacity:0; transition:opacity .15s ease;
+}
+.row.done .cb-checkmark { opacity:1; }
+
+/* ── Row left: number badge (SOP) or icon ── */
+.row-num {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg, var(--caramel-lt), var(--caramel));
+  color:white; font-family:'Noto Serif TC',serif;
+  font-size:13px; font-weight:900;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 6px rgba(196,147,90,.28);
+  transition: background .18s ease; margin-top:0;
+}
+.row.done .row-num {
+  background:linear-gradient(135deg, var(--sage), var(--sage-dk));
+}
+
+/* ── Row main text area ── */
+.row-body { flex:1; min-width:0; }
+.row-title {
+  font-family:'Noto Serif TC',serif; font-size:13px; font-weight:700;
+  color:var(--ink); line-height:1.5; display:block;
+  transition: color .18s ease;
+}
+.row.done .row-title {
+  color:var(--sage-dk); text-decoration:line-through;
+  text-decoration-color:rgba(110,144,112,.45);
+}
+.row-desc {
+  font-family:'Noto Sans TC',sans-serif; font-size:11px;
+  color:var(--muted); line-height:1.65; display:block; margin-top:2px;
+}
+.row-danger {
+  font-family:'Noto Sans TC',sans-serif; font-size:10.5px; font-weight:700;
+  color:var(--danger); display:block; margin-top:3px;
+}
+
+/* ══ TIP BOX ══ */
+.tip {
+  background:linear-gradient(135deg,rgba(168,191,168,.15),rgba(110,144,112,.10));
+  border:1.5px solid rgba(168,191,168,.40); border-left:4px solid var(--sage-dk);
+  border-radius:14px; padding:16px 20px; margin-top:28px;
+  font-family:'Noto Serif TC',serif; font-size:12.5px; line-height:1.90; color:#2A4A2C;
+}
+.tip b { font-weight:700; }
+
+/* ══ FOOTER ══ */
+.footer {
+  border-top:1.5px solid rgba(196,147,90,.18); padding:20px 48px 28px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.footer .credit { font-family:'Noto Sans TC',sans-serif; font-size:10px; color:var(--muted); letter-spacing:1px; }
+.footer .handle { font-family:'Noto Serif TC',serif; font-size:11px; font-weight:700; color:var(--caramel); }
+
+/* ══ BUTTONS ══ */
+.btn-wrap { text-align:center; padding: 28px 48px 40px; }
+.pdf-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(135deg, var(--brown) 0%, var(--brown-mid) 100%);
+  color:#FAF6EE; font-family:'Noto Serif TC',serif;
+  font-size:15px; font-weight:700; letter-spacing:1px;
+  padding:16px 44px; border-radius:50px; border:none; cursor:pointer;
+  box-shadow: 0 4px 20px rgba(92,61,42,.35), 0 1px 0 rgba(255,255,255,.12) inset;
+  transition: transform .25s cubic-bezier(.22,.68,0,1.2), box-shadow .25s ease;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 220px;
+}
+.pdf-btn:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 10px 32px rgba(92,61,42,.45); }
+.pdf-btn:active { transform:translateY(0) scale(.99); }
+.pdf-btn.loading { opacity:.70; pointer-events:none; }
+.btn-icon { font-size:18px; }
+.spinner {
+  width:18px; height:18px; border-radius:50%;
+  border:2.5px solid rgba(250,246,238,.25); border-top-color:rgba(250,246,238,.90);
+  animation:spin .7s linear infinite; display:none;
+}
+.pdf-btn.loading .spinner { display:block; }
+.pdf-btn.loading .btn-icon { display:none; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.reset-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:transparent; color:var(--muted);
+  font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:600; letter-spacing:1px;
+  padding:10px 22px; border-radius:50px;
+  border:1.5px solid rgba(138,112,96,.28); cursor:pointer;
+  transition:all .18s ease; margin-top:12px;
+  -webkit-tap-highlight-color: transparent;
+}
+.reset-btn:hover { border-color:var(--caramel); color:var(--caramel); background:rgba(196,147,90,.06); }
+
+.pdf-note {
+  font-family:'Noto Sans TC',sans-serif; font-size:11px; color:var(--muted);
+  margin-top:10px; display:block; letter-spacing:.5px;
+}
+
+@media print {
+  body { background:white; padding:0; }
+  .paper { box-shadow:none; border-radius:0; }
+  .btn-wrap { display:none; }
+  .row { break-inside:avoid; }
+}
+@media (max-width:600px) {
+  .header,.content,.progress-wrap,.footer,.btn-wrap { padding-left:22px; padding-right:22px; }
+  .header h1 { font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="paper" id="checklist-paper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="brand">變裝虎皮王｜鸚鵡日常</span>
+    <h1>🐦 養鳥居家<br>安全清單</h1>
+    <p class="desc">列印出來或截圖傳給家人<br>讓每個人都知道，哪些東西對鳥寶有危險</p>
+    <div class="tag-row">
+      <span class="htag">居家安全</span>
+      <span class="htag">鸚鵡飼主必備</span>
+      <span class="htag">可列印版本</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span class="pl-text">✦ 完成進度</span>
+      <span class="pl-count" id="prog-text">0 / 25 項</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="prog-bar"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- 1 空氣安全 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🌬️</span>
+        <span class="section-title">空氣安全</span>
+        <span class="section-count">5 項</span>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">家中不使用不沾鍋（鐵氟龍 / PTFE）</span>
+          <span class="row-desc">改用陶瓷鍋、不鏽鋼鍋或鑄鐵鍋</span>
+          <span class="row-danger">⛔ 加熱後釋放的氣體數分鐘內可致鸚鵡死亡</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">不在室內點香氛蠟燭或線香</span>
+          <span class="row-desc">如需點，確保鸚鵡在另一通風房間</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">不使用精油擴香機</span>
+          <span class="row-desc">茶樹、薄荷、丁香、尤加利對鸚鵡均有毒性</span>
+          <span class="row-danger">⛔ 「天然的」不等於對鳥安全</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">噴殺蟲劑後通風 4 小時以上</span>
+          <span class="row-desc">電蚊香、驅蚊液、驅蚊貼片也需遠離鳥籠</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">使用漂白水清潔後充分沖洗晾乾</span>
+          <span class="row-desc">建議改用稀釋白醋（1:10）清潔籠具，更安全</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 物理環境 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🌀</span>
+        <span class="section-title">物理環境安全</span>
+        <span class="section-count">5 項</span>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">放飛前關閉所有電風扇</span>
+          <span class="row-desc">包含立扇、吊扇、循環扇，缺一不可</span>
+          <span class="row-danger">⛔ 這是放飛意外的頭號原因</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">透明玻璃窗貼防撞貼紙</span>
+          <span class="row-desc">鸚鵡看不見玻璃，全速撞上可造成腦震盪</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">放飛前確認紗窗、門窗已關好</span>
+          <span class="row-desc">鸚鵡飛出後極難找回，請養成每次確認的習慣</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">馬桶、水桶、洗手台加蓋或隔離</span>
+          <span class="row-desc">鸚鵡好奇心強，容易在無人注意時溺水</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">廚房有爐火時需隔離或全程陪同</span>
+          <span class="row-desc">熱鍋、滾水、蒸氣對鸚鵡都是高風險</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 飲食安全 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🍽️</span>
+        <span class="section-title">飲食安全</span>
+        <span class="section-count">6 項</span>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">絕對不餵巧克力、咖啡因</span>
+          <span class="row-desc">對鸚鵡心臟毒性極強，微量也可能致命</span>
+          <span class="row-danger">⛔ 包含可可粉、含咖啡因飲料</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">絕對不餵酪梨（含果皮、果核、果肉）</span>
+          <span class="row-desc">毒素 Persin 可導致鸚鵡心臟衰竭死亡</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">不餵蔥、蒜、洋蔥類</span>
+          <span class="row-desc">破壞紅血球，造成溶血性貧血</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">不餵任何酒精類食物</span>
+          <span class="row-desc">鸚鵡對酒精代謝極差，微量即可能中毒</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">飲水每天換新</span>
+          <span class="row-desc">防止細菌、藻類滋生，建議使用過濾水</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">食碗、水碗每天清洗</span>
+          <span class="row-desc">溫水清洗即可，避免使用含香料清潔劑</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 多寵共養 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">🐱</span>
+        <span class="section-title">多寵共養安全</span>
+        <span class="section-count">3 項</span>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">貓狗與鸚鵡不可無人監督獨處</span>
+          <span class="row-desc">即使平常相處良好，本能反應難以預測</span>
+          <span class="row-danger">⛔ 請務必有人在場才讓牠們接觸</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">被貓狗抓咬後立即就醫，不等待</span>
+          <span class="row-desc">貓爪含巴氏桿菌，感染可在數小時內致命</span>
+        </div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+        <div class="row-body">
+          <span class="row-title">家中其他寵物的飼料、藥品遠離鸚鵡</span>
+          <span class="row-desc">貓狗用藥對鸚鵡幾乎都有毒</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 SOP -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-icon">✅</span>
+        <span class="section-title">放飛前 SOP</span>
+        <span class="section-count">6 步驟</span>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">1</div>
+        <div class="row-body">
+          <span class="row-title">風扇全部關閉（立扇、吊扇、循環扇）</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">2</div>
+        <div class="row-body">
+          <span class="row-title">廚房隔離 / 確認爐火、熱水壺已關</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">3</div>
+        <div class="row-body">
+          <span class="row-title">擴香機、蠟燭、線香已關閉</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">4</div>
+        <div class="row-body">
+          <span class="row-title">門窗、紗窗確認關好</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">5</div>
+        <div class="row-body">
+          <span class="row-title">馬桶蓋好、水桶收好</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+
+      <div class="row" onclick="toggleRow(this)">
+        <div class="row-num">6</div>
+        <div class="row-body">
+          <span class="row-title">貓狗已隔離或有人監督</span>
+        </div>
+        <div class="cb-box"><div class="cb-checkmark"></div></div>
+      </div>
+    </div>
+
+    <!-- TIP -->
+    <div class="tip">
+      🌿 <b>給鳥奴的話：</b>鸚鵡的呼吸系統比人類敏感 10 倍以上。你聞不到、感覺不到的微量氣體，對牠可能已是致命劑量。<br><br>
+      養鳥最重要的功課，是讓家成為牠真正安全的地方。<br>
+      謝謝你願意花時間看完這份清單 🐦<br><br>
+      <b>—— 變裝虎皮王｜@mr.blue0521</b>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="credit">© 變裝虎皮王｜鸚鵡日常 · 養鳥居家安全清單</span>
+    <span class="handle">@mr.blue0521</span>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="btn-wrap" id="btn-wrap">
+    <div>
+      <button class="pdf-btn" id="pdf-btn" onclick="savePDF()">
+        <span class="btn-icon">📄</span>
+        <div class="spinner"></div>
+        儲存為 PDF 並下載
+      </button>
+    </div>
+    <div>
+      <button class="reset-btn" onclick="resetAll()">↺ 清除所有勾選</button>
+    </div>
+    <span class="pdf-note">⏳ 按下後請稍等 3-5 秒，PDF 將自動下載</span>
+  </div>
+
+</div><!-- /paper -->
+
+<script>
+/* ══════════════════════════════
+   TOGGLE — unified for ALL rows
+══════════════════════════════ */
+const TOTAL = 25;
+
+function toggleRow(el) {
+  el.classList.toggle('done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const done  = document.querySelectorAll('.row.done').length;
+  const pct   = Math.round(done / TOTAL * 100);
+  const bar   = document.getElementById('prog-bar');
+  const label = document.getElementById('prog-text');
+
+  bar.style.width = pct + '%';
+  label.textContent = done + ' / ' + TOTAL + ' 項';
+
+  if (done === TOTAL) {
+    bar.classList.add('complete');
+    label.classList.add('complete');
+    label.textContent = '🎉 全部完成！';
+  } else {
+    bar.classList.remove('complete');
+    label.classList.remove('complete');
+  }
+}
+
+function resetAll() {
+  document.querySelectorAll('.row.done').forEach(r => r.classList.remove('done'));
+  updateProgress();
+}
+
+/* ══════════════════════════════
+   PDF — Apple Safari compatible
+   Strategy: html2canvas → canvas
+   → toBlob → object URL → <a> click
+══════════════════════════════ */
+async function savePDF() {
+  const btn    = document.getElementById('pdf-btn');
+  const btnWrap = document.getElementById('btn-wrap');
+
+  btn.classList.add('loading');
+  btnWrap.style.visibility = 'hidden';   /* hide but keep layout so scroll height stays */
+
+  await new Promise(r => setTimeout(r, 80)); /* let browser repaint */
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const paper = document.getElementById('checklist-paper');
+
+    /* ① capture full element at 2× for retina */
+    const canvas = await html2canvas(paper, {
+      scale         : 2,
+      useCORS       : true,
+      allowTaint    : true,
+      backgroundColor: '#FAF7EE',
+      scrollX       : 0,
+      scrollY       : -window.scrollY,
+      windowWidth   : paper.scrollWidth,
+      windowHeight  : paper.scrollHeight,
+      logging       : false
+    });
+
+    /* ② build PDF sized to content (not fixed A4) */
+    const mmPerPx = 0.264583;
+    const pdfW    = canvas.width  / 2 * mmPerPx;   /* back to CSS px then mm */
+    const pdfH    = canvas.height / 2 * mmPerPx;
+
+    const pdf = new jsPDF({
+      orientation : pdfH > pdfW ? 'portrait' : 'landscape',
+      unit        : 'mm',
+      format      : [pdfW, pdfH],
+      compress    : true
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.93);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, '', 'FAST');
+
+    /* ③ 依裝置選擇下載方式 */
+    const pdfBlob = pdf.output('blob');
+    const fileName = '養鳥居家安全清單_變裝虎皮王.pdf';
+
+    /* 手機優先：Web Share API（iOS/Android 原生分享選單，可存到「檔案」） */
+    const shareFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+      await navigator.share({
+        files : [shareFile],
+        title : '養鳥居家安全清單',
+        text  : '變裝虎皮王｜鸚鵡日常'
+      });
+    } else {
+      /* 電腦版：Blob → object URL → invisible <a> 直接下載 */
+      const blobURL = URL.createObjectURL(pdfBlob);
+      const link    = document.createElement('a');
+      link.href     = blobURL;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(blobURL);
+        document.body.removeChild(link);
+      }, 2000);
+    }
+
+  } catch(err) {
+    console.error('PDF error:', err);
+    /* Fallback: open print dialog */
+    alert('自動下載遇到問題。\n將開啟列印視窗，請選擇「儲存為 PDF」。');
+    window.print();
+  }
+
+  btnWrap.style.visibility = '';
+  btn.classList.remove('loading');
+}
+
+/* init */
+updateProgress();
+</script>
+</body>
+</html>
