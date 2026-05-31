@@ -667,32 +667,22 @@ async function savePDF() {
     const imgData = canvas.toDataURL('image/jpeg', 0.93);
     pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, '', 'FAST');
 
-    /* ③ 依裝置選擇下載方式 */
+    /* ③ Blob → object URL → invisible <a> 直接下載 */
     const pdfBlob = pdf.output('blob');
     const fileName = '養鳥居家安全清單_變裝虎皮王.pdf';
+    const blobURL = URL.createObjectURL(pdfBlob);
 
-    /* 手機優先：Web Share API（iOS/Android 原生分享選單，可存到「檔案」） */
-    const shareFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-    if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
-      await navigator.share({
-        files : [shareFile],
-        title : '養鳥居家安全清單',
-        text  : '變裝虎皮王｜鸚鵡日常'
-      });
-    } else {
-      /* 電腦版：Blob → object URL → invisible <a> 直接下載 */
-      const blobURL = URL.createObjectURL(pdfBlob);
-      const link    = document.createElement('a');
-      link.href     = blobURL;
-      link.download = fileName;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(blobURL);
-        document.body.removeChild(link);
-      }, 2000);
-    }
+    const link    = document.createElement('a');
+    link.href     = blobURL;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(blobURL);
+      document.body.removeChild(link);
+    }, 2000);
 
   } catch(err) {
     console.error('PDF error:', err);
